@@ -16,21 +16,20 @@
 
 package com.zaxxer.hikari.pool;
 
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static org.junit.Assert.assertEquals;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.util.UtilityElf;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.util.UtilityElf;
+import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
 
 /**
  * @author Martin Stříž (striz@raynet.cz)
@@ -40,7 +39,7 @@ public class HouseKeeperCleanupTest
 
    private ScheduledThreadPoolExecutor executor;
 
-   @Before
+   @BeforeEach
    public void before() throws Exception
    {
       ThreadFactory threadFactory = new UtilityElf.DefaultThreadFactory("global housekeeper", true);
@@ -48,6 +47,13 @@ public class HouseKeeperCleanupTest
       executor = new ScheduledThreadPoolExecutor(1, threadFactory, new ThreadPoolExecutor.DiscardPolicy());
       executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
       executor.setRemoveOnCancelPolicy(true);
+   }
+
+   @AfterEach
+   public void after() throws Exception
+   {
+      executor.shutdown();
+      executor.awaitTermination(5, TimeUnit.SECONDS);
    }
 
    @Test
@@ -61,6 +67,9 @@ public class HouseKeeperCleanupTest
       config.setDataSourceClassName("com.zaxxer.hikari.mocks.StubDataSource");
       config.setScheduledExecutor(executor);
 
+      Assertions.assertNotNull(executor);
+      Assertions.assertNotNull(executor.getQueue());
+
       HikariConfig config2 = newHikariConfig();
       config.copyStateTo(config2);
 
@@ -68,17 +77,9 @@ public class HouseKeeperCleanupTest
          final HikariDataSource ds1 = new HikariDataSource(config);
          final HikariDataSource ds2 = new HikariDataSource(config2)
       ) {
-         assertEquals("Scheduled tasks count not as expected, ", 2, executor.getQueue().size());
+         Assertions.assertEquals(2, executor.getQueue().size(), "Scheduled tasks count not as expected, ");
       }
 
-      assertEquals("Scheduled tasks count not as expected, ", 0, executor.getQueue().size());
+      Assertions.assertEquals(0, executor.getQueue().size(), "Scheduled tasks count not as expected, ");
    }
-
-   @After
-   public void after() throws Exception
-   {
-      executor.shutdown();
-      executor.awaitTermination(5, TimeUnit.SECONDS);
-   }
-
 }

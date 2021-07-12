@@ -25,9 +25,9 @@ import com.zaxxer.hikari.mocks.StubDataSource;
 import com.zaxxer.hikari.mocks.StubStatement;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import org.apache.logging.log4j.Level;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public class TestConnections
 {
-   @Before
+   @BeforeEach
    public void before()
    {
       setSlf4jTargetStream(HikariPool.class, System.err);
@@ -52,7 +52,7 @@ public class TestConnections
       setSlf4jLogLevel(PoolBase.class, Level.DEBUG);
    }
 
-   @After
+   @AfterEach
    public void after()
    {
       System.getProperties().remove("com.zaxxer.hikari.housekeeping.periodMs");

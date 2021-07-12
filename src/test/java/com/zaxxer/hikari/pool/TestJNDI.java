@@ -19,7 +19,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariJNDIFactory;
 import com.zaxxer.hikari.mocks.StubDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.osjava.sj.jndi.AbstractContext;
 
 import javax.naming.*;

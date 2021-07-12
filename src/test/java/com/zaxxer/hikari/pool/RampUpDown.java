@@ -25,10 +25,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.junit.jupiter.api.Test;
 
 public class RampUpDown
 {

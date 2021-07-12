@@ -21,17 +21,17 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.IMetricsTracker;
 import com.zaxxer.hikari.mocks.StubPoolStats;
 import io.prometheus.client.CollectorRegistry;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.SQLTransientConnectionException;
 
 import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PrometheusMetricsTrackerTest
 {
@@ -45,7 +45,7 @@ public class PrometheusMetricsTrackerTest
    private static final String QUANTILE_LABEL_NAME = "quantile";
    private static final String[] QUANTILE_LABEL_VALUES = new String[]{"0.5", "0.95", "0.99"};
 
-   @Before
+   @BeforeEach
    public void setupCollectorRegistry()
    {
       this.defaultCollectorRegistry = new CollectorRegistry();

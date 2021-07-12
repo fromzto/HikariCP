@@ -19,16 +19,16 @@ package com.zaxxer.hikari.metrics.prometheus;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.prometheus.client.CollectorRegistry;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.SQLTransientConnectionException;
 
 import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 public class PrometheusHistogramMetricsTrackerTest {
 
@@ -38,7 +38,7 @@ public class PrometheusHistogramMetricsTrackerTest {
    private static final String POOL_LABEL_NAME = "pool";
    private static final String[] LABEL_NAMES = {POOL_LABEL_NAME};
 
-   @Before
+   @BeforeEach
    public void setupCollectorRegistry() {
       this.defaultCollectorRegistry = new CollectorRegistry();
       this.customCollectorRegistry = new CollectorRegistry();

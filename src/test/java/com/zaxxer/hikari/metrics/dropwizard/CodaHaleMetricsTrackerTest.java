@@ -2,8 +2,8 @@ package com.zaxxer.hikari.metrics.dropwizard;
 
 import com.codahale.metrics.MetricRegistry;
 import com.zaxxer.hikari.mocks.StubPoolStats;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,7 +19,7 @@ public class CodaHaleMetricsTrackerTest
 
    private CodaHaleMetricsTracker testee;
 
-   @Before
+   @BeforeEach
    public void setup()
    {
       testee = new CodaHaleMetricsTracker("mypool", new StubPoolStats(0), mockMetricRegistry);

@@ -16,31 +16,23 @@
 
 package com.zaxxer.hikari.pool;
 
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static com.zaxxer.hikari.pool.TestElf.getPool;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.sql.*;
+
+import static com.zaxxer.hikari.pool.TestElf.getPool;
+import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
+import static org.junit.Assert.*;
 
 public class ExceptionTest
 {
    private HikariDataSource ds;
 
-   @Before
+   @BeforeEach
    public void setup()
    {
       HikariConfig config = newHikariConfig();
@@ -50,9 +42,10 @@ public class ExceptionTest
       config.setDataSourceClassName("com.zaxxer.hikari.mocks.StubDataSource");
 
       ds = new HikariDataSource(config);
+      assertNotNull(ds);
    }
 
-   @After
+   @AfterEach
    public void teardown()
    {
       ds.close();
@@ -61,6 +54,7 @@ public class ExceptionTest
    @Test
    public void testException1() throws SQLException
    {
+      assertNotNull(ds);
       try (Connection connection = ds.getConnection()) {
          assertNotNull(connection);
 

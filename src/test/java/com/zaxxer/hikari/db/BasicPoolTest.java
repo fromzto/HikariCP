@@ -20,16 +20,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static com.zaxxer.hikari.pool.TestElf.getPool;
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static com.zaxxer.hikari.pool.TestElf.getUnsealedConfig;
+import static com.zaxxer.hikari.pool.TestElf.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
@@ -41,7 +39,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class BasicPoolTest
 {
-   @Before
+   @BeforeEach
    public void setup() throws SQLException
    {
        HikariConfig config = newHikariConfig();

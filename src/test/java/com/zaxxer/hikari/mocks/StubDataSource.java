@@ -35,7 +35,7 @@ public class StubDataSource implements DataSource
    private String user;
    private String password;
    private PrintWriter logWriter;
-   private SQLException throwException;
+   private volatile SQLException throwException;
    private long connectionAcquistionTime = 0;
    private int loginTimeout;
    private int waitTimeout = 30000;
@@ -146,7 +146,7 @@ public class StubDataSource implements DataSource
       return new StubConnection(waitTimeout);
    }
 
-   public void setThrowException(SQLException e)
+   public synchronized void setThrowException(SQLException e)
    {
       this.throwException = e;
    }

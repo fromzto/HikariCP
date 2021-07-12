@@ -16,32 +16,30 @@
 
 package com.zaxxer.hikari.metrics.prometheus;
 
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static com.zaxxer.hikari.util.UtilityElf.quietlySleep;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.metrics.PoolStats;
+import com.zaxxer.hikari.mocks.StubConnection;
+import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.sql.Connection;
 import java.util.List;
 
-import com.zaxxer.hikari.metrics.PoolStats;
-import io.prometheus.client.Collector;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.mocks.StubConnection;
-
-import io.prometheus.client.CollectorRegistry;
+import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
+import static com.zaxxer.hikari.util.UtilityElf.quietlySleep;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNull;
 
 public class HikariCPCollectorTest
 {
 
    private CollectorRegistry collectorRegistry;
 
-   @Before
+   @BeforeEach
    public void setupCollectorRegistry()
    {
       this.collectorRegistry = new CollectorRegistry();

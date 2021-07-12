@@ -16,12 +16,13 @@
 
 package com.zaxxer.hikari.pool;
 
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static com.zaxxer.hikari.util.ClockSource.currentTime;
-import static com.zaxxer.hikari.util.ClockSource.elapsedMillis;
-import static com.zaxxer.hikari.util.UtilityElf.quietlySleep;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.*;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -29,28 +30,27 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.After;
-import org.junit.Before;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.junit.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
+import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
+import static com.zaxxer.hikari.util.ClockSource.currentTime;
+import static com.zaxxer.hikari.util.ClockSource.elapsedMillis;
+import static com.zaxxer.hikari.util.UtilityElf.quietlySleep;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PostgresTest
 {
-   private static final DockerImageName IMAGE_NAME = DockerImageName.parse("postgres:9.6.20");
+   private static final DockerImageName IMAGE_NAME = DockerImageName.parse("postgres:11");
 
    private PostgreSQLContainer<?> postgres;
 
-   @Before
+   @BeforeEach
    public void beforeTest() {
      postgres = new PostgreSQLContainer<>(IMAGE_NAME);
      postgres.start();
    }
 
-   @After
+   @AfterEach
    public void afterTest() {
      postgres.stop();
    }
@@ -179,7 +179,7 @@ public class PostgresTest
       }
    }
 
-   @Before
+   @BeforeEach
    public void before()
    {
       System.err.println("\n");

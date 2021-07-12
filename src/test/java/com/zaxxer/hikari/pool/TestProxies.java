@@ -28,12 +28,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.mocks.StubConnection;
 import com.zaxxer.hikari.mocks.StubStatement;
+import org.junit.jupiter.api.Test;
 
 public class TestProxies
 {
@@ -231,7 +230,7 @@ public class TestProxies
          try (Connection conn = ds.getConnection()) {
             StubConnection stubConnection = conn.unwrap(StubConnection.class);
             stubConnection.throwException = true;
-   
+
             try {
                conn.setTransactionIsolation(Connection.TRANSACTION_NONE);
                fail();
@@ -239,7 +238,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.isReadOnly();
                fail();
@@ -247,7 +246,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.setReadOnly(false);
                fail();
@@ -255,7 +254,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.setCatalog("");
                fail();
@@ -263,7 +262,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.setAutoCommit(false);
                fail();
@@ -271,7 +270,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.clearWarnings();
                fail();
@@ -279,7 +278,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.isValid(0);
                fail();
@@ -287,7 +286,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.isWrapperFor(getClass());
                fail();
@@ -295,7 +294,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.unwrap(getClass());
                fail();
@@ -303,7 +302,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                conn.close();
                fail();
@@ -311,7 +310,7 @@ public class TestProxies
             catch (SQLException e) {
                // pass
             }
-   
+
             try {
                assertFalse(conn.isValid(0));
             }

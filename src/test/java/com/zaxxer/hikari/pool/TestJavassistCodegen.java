@@ -4,7 +4,7 @@ import com.zaxxer.hikari.mocks.StubConnection;
 import com.zaxxer.hikari.pool.TestElf.FauxWebClassLoader;
 import com.zaxxer.hikari.util.JavassistProxyFactory;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

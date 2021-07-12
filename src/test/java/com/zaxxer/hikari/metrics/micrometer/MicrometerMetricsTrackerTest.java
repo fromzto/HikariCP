@@ -4,8 +4,8 @@ import com.zaxxer.hikari.mocks.StubPoolStats;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 public class MicrometerMetricsTrackerTest
 {
@@ -14,7 +14,7 @@ public class MicrometerMetricsTrackerTest
 
    private MicrometerMetricsTracker testee;
 
-   @Before
+   @BeforeEach
    public void setup()
    {
       testee = new MicrometerMetricsTracker("mypool", new StubPoolStats(1000L), mockMeterRegistry);

@@ -20,7 +20,7 @@ import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariPoolMXBean;
 import com.zaxxer.hikari.mocks.StubDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;

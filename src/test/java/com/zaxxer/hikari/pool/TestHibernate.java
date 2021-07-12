@@ -24,9 +24,9 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import org.hibernate.service.UnknownUnwrapTypeException;
-import org.junit.Test;
 
 import com.zaxxer.hikari.hibernate.HikariConnectionProvider;
+import org.junit.jupiter.api.Test;
 
 public class TestHibernate
 {

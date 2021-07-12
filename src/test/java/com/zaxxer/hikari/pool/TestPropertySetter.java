@@ -29,10 +29,9 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.util.PropertyElf;
+import org.junit.jupiter.api.Test;
 
 public class TestPropertySetter
 {

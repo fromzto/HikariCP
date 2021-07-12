@@ -16,42 +16,51 @@
 
 package com.zaxxer.hikari.pool;
 
-import static com.zaxxer.hikari.pool.TestElf.getPool;
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static com.zaxxer.hikari.pool.TestElf.setSlf4jLogLevel;
-import static com.zaxxer.hikari.pool.TestElf.setSlf4jTargetStream;
-import static com.zaxxer.hikari.util.ClockSource.currentTime;
-import static com.zaxxer.hikari.util.ClockSource.elapsedMillis;
-import static java.lang.Thread.sleep;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.mocks.StubConnection;
+import com.zaxxer.hikari.mocks.StubDataSource;
+import org.apache.logging.log4j.Level;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLTransientConnectionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.Level;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.mocks.StubConnection;
-import com.zaxxer.hikari.mocks.StubDataSource;
+import static com.zaxxer.hikari.pool.TestElf.*;
+import static com.zaxxer.hikari.util.ClockSource.currentTime;
+import static com.zaxxer.hikari.util.ClockSource.elapsedMillis;
+import static java.lang.Thread.sleep;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.Assert.*;
 
 public class TestConnectionTimeoutRetry
 {
+   @BeforeEach
+   public void before()
+   {
+      setSlf4jLogLevel(HikariPool.class, Level.DEBUG);
+   }
+
+   @AfterEach
+   public void after()
+   {
+      System.getProperties().remove("com.zaxxer.hikari.housekeeping.periodMs");
+      setSlf4jLogLevel(HikariPool.class, Level.DEBUG);
+   }
+
    @Test
    public void testConnectionRetries() throws SQLException
    {
+      Thread.currentThread().setName("testConnectionRetries");
+
       HikariConfig config = newHikariConfig();
       config.setMinimumIdle(0);
       config.setMaximumPoolSize(1);
@@ -80,6 +89,8 @@ public class TestConnectionTimeoutRetry
    @Test
    public void testConnectionRetries2() throws SQLException
    {
+      Thread.currentThread().setName("testConnectionRetries2");
+
       HikariConfig config = newHikariConfig();
       config.setMinimumIdle(0);
       config.setMaximumPoolSize(1);
@@ -124,6 +135,8 @@ public class TestConnectionTimeoutRetry
    @Test
    public void testConnectionRetries3() throws SQLException
    {
+      Thread.currentThread().setName("testConnectionRetries3");
+
       HikariConfig config = newHikariConfig();
       config.setMinimumIdle(0);
       config.setMaximumPoolSize(2);
@@ -173,35 +186,38 @@ public class TestConnectionTimeoutRetry
    @Test
    public void testConnectionRetries5() throws SQLException
    {
+      Thread.currentThread().setName("testConnectionRetries5");
+
       HikariConfig config = newHikariConfig();
       config.setMinimumIdle(0);
-      config.setMaximumPoolSize(2);
+      config.setMaximumPoolSize(3);
       config.setConnectionTimeout(1000);
       config.setValidationTimeout(1000);
       config.setConnectionTestQuery("VALUES 1");
       config.setDataSourceClassName("com.zaxxer.hikari.mocks.StubDataSource");
 
       try (HikariDataSource ds = new HikariDataSource(config)) {
+         assertSame("Unexpected total connections", 0, ds.getHikariPoolMXBean().getTotalConnections());
+
          final Connection connection1 = ds.getConnection();
+
+         StubDataSource stubDataSource = ds.unwrap(StubDataSource.class);
+         stubDataSource.setThrowException(new SQLException("Connection refused"));
+
+         assertSame("Unexpected total connections", 1, ds.getHikariPoolMXBean().getTotalConnections());
+         assertSame("Unexpected connection waiters", 0, ds.getHikariPoolMXBean().getThreadsAwaitingConnection());
 
          long start = currentTime();
 
          ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-         scheduler.schedule(new Runnable() {
-            @Override
-            public void run()
-            {
-               try {
-                  connection1.close();
-               }
-               catch (Exception e) {
-                  e.printStackTrace(System.err);
-               }
+         scheduler.schedule(() -> {
+            try {
+               connection1.close();
+            }
+            catch (Exception e) {
+               e.printStackTrace(System.err);
             }
          }, 250, MILLISECONDS);
-
-         StubDataSource stubDataSource = ds.unwrap(StubDataSource.class);
-         stubDataSource.setThrowException(new SQLException("Connection refused"));
 
          try {
             try (Connection connection2 = ds.getConnection()) {
@@ -209,12 +225,13 @@ public class TestConnectionTimeoutRetry
             }
 
             long elapsed = elapsedMillis(start);
-            assertTrue("Waited too long to get a connection.", (elapsed >= 250) && (elapsed < config.getConnectionTimeout()));
+            assertTrue("Waited too long to get a connection (" + elapsed + "ms)", (elapsed >= 250) && (elapsed < config.getConnectionTimeout()));
          }
-         catch (SQLException e) {
+         catch (SQLTransientConnectionException e) {
             fail("Should not have timed out.");
          }
          finally {
+            stubDataSource.setThrowException(null);
             scheduler.shutdownNow();
          }
       }
@@ -223,6 +240,8 @@ public class TestConnectionTimeoutRetry
    @Test
    public void testConnectionIdleFill() throws Exception
    {
+      Thread.currentThread().setName("testConnectionIdleFill");
+
       StubConnection.slowCreate = false;
 
       HikariConfig config = newHikariConfig();
@@ -261,18 +280,5 @@ public class TestConnectionTimeoutRetry
          assertSame("Total connections not as expected", 10, pool.getTotalConnections());
          assertSame("Idle connections not as expected", 10, pool.getIdleConnections());
       }
-   }
-
-   @Before
-   public void before()
-   {
-      setSlf4jLogLevel(HikariPool.class, Level.INFO);
-   }
-
-   @After
-   public void after()
-   {
-      System.getProperties().remove("com.zaxxer.hikari.housekeeping.periodMs");
-      setSlf4jLogLevel(HikariPool.class, Level.INFO);
    }
 }

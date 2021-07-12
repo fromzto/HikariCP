@@ -23,9 +23,8 @@ import static org.junit.Assert.assertSame;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.junit.Test;
-
 import com.zaxxer.hikari.HikariDataSource;
+import org.junit.jupiter.api.Test;
 
 public class IsolationTest
 {

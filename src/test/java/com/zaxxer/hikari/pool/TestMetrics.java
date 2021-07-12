@@ -16,26 +16,7 @@
 
 package com.zaxxer.hikari.pool;
 
-import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
-import static com.zaxxer.hikari.pool.TestElf.newHikariDataSource;
-import static com.zaxxer.hikari.util.UtilityElf.quietlySleep;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.SortedMap;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Test;
-
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricFilter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.*;
 import com.codahale.metrics.health.HealthCheck.Result;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.zaxxer.hikari.HikariConfig;
@@ -43,6 +24,19 @@ import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.MetricsTrackerFactory;
 import com.zaxxer.hikari.metrics.dropwizard.CodahaleMetricsTrackerFactory;
 import com.zaxxer.hikari.util.UtilityElf;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.SortedMap;
+import java.util.concurrent.TimeUnit;
+
+import static com.zaxxer.hikari.pool.TestElf.newHikariConfig;
+import static com.zaxxer.hikari.pool.TestElf.newHikariDataSource;
+import static com.zaxxer.hikari.util.UtilityElf.quietlySleep;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 
 /**
  * Test HikariCP/CodaHale metrics integration.
@@ -299,17 +293,19 @@ public class TestMetrics
       }
    }
 
-   @Test(expected = IllegalArgumentException.class)
+   @Test
    public void testFakeMetricRegistryThrowsIllegalArgumentException()
    {
-      try (HikariDataSource ds = newHikariDataSource()) {
-         ds.setMaximumPoolSize(1);
-         ds.setDataSourceClassName("com.zaxxer.hikari.mocks.StubDataSource");
+      Assertions.assertThrows(IllegalArgumentException.class, () -> {
+         try (HikariDataSource ds = newHikariDataSource()) {
+            ds.setMaximumPoolSize(1);
+            ds.setDataSourceClassName("com.zaxxer.hikari.mocks.StubDataSource");
 
-         FakeMetricRegistry metricRegistry = new FakeMetricRegistry();
+            FakeMetricRegistry metricRegistry = new FakeMetricRegistry();
 
-         ds.setMetricRegistry(metricRegistry);
-      }
+            ds.setMetricRegistry(metricRegistry);
+         }
+      });
    }
 
    private static class FakeMetricRegistry {}
