@@ -443,7 +443,6 @@
                <classifier>${artifact.classifier}</classifier>
                <instructions>
                   <Automatic-Module-Name>${automatic.module.name}</Automatic-Module-Name>
-                  <Multi-Release>true</Multi-Release>
                   <Bundle-Name>HikariCP</Bundle-Name>
                   <Export-Package>
                      com.zaxxer.hikari,
